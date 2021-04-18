@@ -39,9 +39,9 @@ def root():
     return {"method": "POST"}
 
 @app.get("/auth", status_code=401)
-def root(password: str, password_hash: str, response: Response):
-    pass_hash = hashlib.sha512( password.encode("utf-8") ).hexdigest()
-    if pass_hash != password_hash:
+def root(password, password_hash, response: Response):
+    pass_hash = hashlib.sha512( str(password).encode("utf-8") ).hexdigest()
+    if pass_hash != str(password_hash):
         response.status_code = 401
     else:
         response.status_code = 204
@@ -70,6 +70,7 @@ def root(id: int, response: Response):
         response.status_code = 400
     else:
         if id in app.dicti.keys():
+            response.status_code = 200
             return app.dicti[id]
         else:
             response.status_code = 404
