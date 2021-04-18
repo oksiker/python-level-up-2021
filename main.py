@@ -39,7 +39,7 @@ def root():
     return {"method": "POST"}
 
 @app.get("/auth", status_code=401)
-def root(password: str, password_hash: str, response: Response):
+def root(response: Response, password='', password_hash=''):
     pass_hash = hashlib.sha512( password.encode("utf-8") ).hexdigest()
     if pass_hash != password_hash:
         response.status_code = 401
