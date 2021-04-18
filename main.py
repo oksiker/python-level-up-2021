@@ -55,7 +55,7 @@ class Item(BaseModel):
 @app.post("/register", status_code=201)
 def root(item: Item):
     app.counter +=1
-    letters =0;
+    letters =0
     for i in item.name:
         if item.name[i].isalpha():
             letters += 1
