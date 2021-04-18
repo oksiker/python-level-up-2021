@@ -57,10 +57,10 @@ def root(item: Item):
     app.counter +=1
     letters =0
     for i in item.name:
-        if item.name[i].isalpha():
+        if str(i).isalpha():
             letters += 1
     for i in item.surname:
-        if item.surname[i].isalpha():
+        if str(i).isalpha():
             letters += 1
     
     register_date = datetime.today()
