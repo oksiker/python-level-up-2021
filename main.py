@@ -12,7 +12,7 @@ app.dicti = {}
 
 @app.get("/")
 def root():
-    return {"message": "Hello World"}
+    return {"message": "Hello World!"}
 
 @app.get("/method")
 def root():
