@@ -54,15 +54,23 @@ class Item(BaseModel):
 def root(item: Item):
     app.counter +=1
     register_date = datetime.today()
+    letters=0
+    for i in item.name:
+        if item.name[i].isalpha():
+            letters += 1
+    for i in item.surname:
+        if item.surname[i].isalpha():
+            letters += 1
     json= {
         "id": app.counter,
         "name": item.name,
         "surname": item.surname,
         "register_date": register_date.strftime('%Y-%m-%d'),
-        "vaccination_date": (register_date + timedelta(days=(len(item.name))+(len(item.surname)))).strftime('%Y-%m-%d')
+        "vaccination_date": (register_date + timedelta(days=letters)).strftime('%Y-%m-%d')
         }
+    app_json = json.dumps(json)
     app.dicti[app.counter]=json
-    return json
+    return app_json
 
 @app.get("/patient/{id}", status_code=200)
 def root(id: int, response: Response):
