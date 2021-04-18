@@ -55,13 +55,21 @@ class Item(BaseModel):
 @app.post("/register", status_code=201)
 def root(item: Item):
     app.counter +=1
+    letters =0;
+    for i in item.name:
+        if item.name[i].isalpha():
+            letters += 1
+    for i in item.surname:
+        if item.surname[i].isalpha():
+            letters += 1
+    
     register_date = datetime.today()
     json= {
         "id": app.counter,
         "name": item.name,
         "surname": item.surname,
         "register_date": register_date.strftime('%Y-%m-%d'),
-        "vaccination_date": (register_date + timedelta(days=(len(item.name))+(len(item.surname)))).strftime('%Y-%m-%d')
+        "vaccination_date": (register_date + timedelta(days=letters).strftime('%Y-%m-%d'))
         }
     app.dicti[app.counter]=json
     return json
