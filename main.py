@@ -69,7 +69,7 @@ def root(item: Item):
         "name": item.name,
         "surname": item.surname,
         "register_date": register_date.strftime('%Y-%m-%d'),
-        "vaccination_date": (register_date + timedelta(days=letters).strftime('%Y-%m-%d'))
+        "vaccination_date": ((register_date + timedelta(days=letters)).strftime('%Y-%m-%d'))
         }
     app.dicti[app.counter]=json
     return json
