@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Response, status
+from fastapi import FastAPI, Response, status,HTTPException,Cookie
 import hashlib
 import urllib.parse as urlparse
 from urllib.parse import parse_qs
@@ -6,11 +6,15 @@ from datetime import datetime
 from pydantic import BaseModel
 from datetime import timedelta
 from fastapi.responses import HTMLResponse
+from hashlib import sha256
 
 
 app = FastAPI()
 app.counter = 0
 app.dicti = {}
+app.secret_key = "qwertyuiop"
+app.access_tokens = ""
+app.access_tokens1 = ""
 
 @app.get("/")
 def root():
@@ -97,3 +101,23 @@ def root():
         <h1>Hello! Today date is """+ data +"""</h1>
     </html>
     """
+
+@app.post("/login_session")
+def login(login: str, password: str, response: Response):
+    if (login=="4dm1n" )& (password=="NotSoSecurePa$$"):
+        session_token = sha256(f"{login}{password}{app.secret_key}".encode()).hexdigest()
+        app.access_tokens=session_token
+        response.set_cookie(key="session_token", value=session_token)
+    else:
+        response.status_code = 404
+
+
+@app.post("/login_token")
+def login(login: str, password: str, response: Response):
+    if (login=="4dm1n" )& (password=="NotSoSecurePa$$"):
+        session_token = sha256(f"{login}{password}{app.secret_key}".encode()).hexdigest()
+        app.access_tokens1=session_token
+        return {"token": "Secure Content"}
+    else:
+        response.status_code = 404
+
