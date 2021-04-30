@@ -5,6 +5,8 @@ from urllib.parse import parse_qs
 from datetime import datetime
 from pydantic import BaseModel
 from datetime import timedelta
+from fastapi.responses import HTMLResponse
+
 
 app = FastAPI()
 app.counter = 0
@@ -85,3 +87,13 @@ def root(id: int, response: Response):
             response.status_code = 404
 
     
+#wyklad 3:
+@app.get("/hello",response_class=HTMLResponse)
+def root():
+    register_date = datetime.today()
+    data = register_date.strftime('%Y-%m-%d')
+    return """
+    <html>
+        <h1>Hello! Today date is """+ data +"""</h1>
+    </html>
+    """
