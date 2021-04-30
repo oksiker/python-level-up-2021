@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Response, status,HTTPException,Cookie
+from fastapi import FastAPI, Response, status,HTTPException, Cookie, Depends
 import hashlib
 import urllib.parse as urlparse
 from urllib.parse import parse_qs
@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from datetime import timedelta
 from fastapi.responses import HTMLResponse
 from hashlib import sha256
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 
 app = FastAPI()
@@ -15,6 +16,7 @@ app.dicti = {}
 app.secret_key = "qwertyuiop"
 app.access_tokens = ""
 app.access_tokens1 = ""
+security = HTTPBasic()
 
 @app.get("/")
 def root():
@@ -103,7 +105,9 @@ def root():
     """
 
 @app.post("/login_session")
-def login(login: str, password: str, response: Response):
+def login(credentials: HTTPBasicCredentials = Depends(security), response: Response=None):
+    login = credentials.username
+    password = credentials.password
     if (login=="4dm1n" )& (password=="NotSoSecurePa$$"):
         session_token = sha256(f"{login}{password}{app.secret_key}".encode()).hexdigest()
         app.access_tokens=session_token
@@ -113,11 +117,13 @@ def login(login: str, password: str, response: Response):
 
 
 @app.post("/login_token")
-def login(login: str, password: str, response: Response):
-    if (login=="4dm1n" )& (password=="NotSoSecurePa$$"):
+def login(credentials: HTTPBasicCredentials = Depends(security), response: Response=None):
+    login = credentials.username
+    password = credentials.password
+    if (login=="4dm1n" ) & (password=="NotSoSecurePa$$"):
         session_token = sha256(f"{login}{password}{app.secret_key}".encode()).hexdigest()
         app.access_tokens1=session_token
-        return {"token": "Secure Content"}
+        return {"token": session_token}
     else:
         response.status_code = 404
 
