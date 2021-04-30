@@ -112,8 +112,9 @@ def login(credentials: HTTPBasicCredentials = Depends(security), response: Respo
         session_token = sha256(f"{login}{password}{app.secret_key}".encode()).hexdigest()
         app.access_tokens=session_token
         response.set_cookie(key="session_token", value=session_token)
+        response.status_code = 201
     else:
-        response.status_code = 404
+        response.status_code = 401
 
 
 @app.post("/login_token")
@@ -123,7 +124,8 @@ def login(credentials: HTTPBasicCredentials = Depends(security), response: Respo
     if (login=="4dm1n" ) & (password=="NotSoSecurePa$$"):
         session_token = sha256(f"{login}{password}{app.secret_key}".encode()).hexdigest()
         app.access_tokens1=session_token
+        response.status_code = 201
         return {"token": session_token}
     else:
-        response.status_code = 404
+        response.status_code = 401
 
