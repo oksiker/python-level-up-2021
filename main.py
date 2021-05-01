@@ -137,7 +137,7 @@ def login(response: Response,credentials: HTTPBasicCredentials = Depends(securit
     else:
         response.status_code = 401
 
-@app.get("/welcome_session")
+@app.get("/welcome_session",status_code=401)
 def welcome(*, response: Response, session_token: str = Cookie(None), format:str=""):
     if (session_token in app.access_tokens1)|(session_token in app.access_tokens):
         response.status_code = 200
@@ -151,7 +151,7 @@ def welcome(*, response: Response, session_token: str = Cookie(None), format:str
         esponse.status_code = 401
 
 
-@app.get("/welcome_token")
+@app.get("/welcome_token",status_code=401)
 def welcome(response: Response,token: str = '', format:str=""):
     if (token in app.access_tokens)|(token in app.access_tokens1):
         response.status_code = 200
