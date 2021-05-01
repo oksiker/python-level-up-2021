@@ -8,6 +8,7 @@ from datetime import timedelta
 from fastapi.responses import HTMLResponse,ORJSONResponse,PlainTextResponse
 from hashlib import sha256
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi.responses import RedirectResponse 
 
 
 app = FastAPI()
@@ -155,3 +156,41 @@ def welcome(response: Response,token: str = '', format:str=""):
             return PlainTextResponse(status_code=200,content="Welcome!")
     else:
         response.status_code = 401
+
+
+@app.delete("/logout_session")
+def fun(*, response: Response, session_token: str = Cookie(None), format:str=""):
+    if (session_token == app.access_tokens1):
+        app.access_tokens1=''
+        rr = RedirectResponse('/logged_out?format={format}', status_code=303)
+        return rr
+    elif(session_token == app.access_tokens):
+        app.access_tokens=''
+        rr = RedirectResponse('/logged_out?format={format}', status_code=303)
+        return rr
+    else:
+        esponse.status_code = 401
+
+@app.delete("/logout_token")
+def fun(response: Response,token: str = '', format:str=""):
+    if (token == app.access_tokens1):
+        app.access_tokens1=''
+        rr = RedirectResponse(f'/logged_out?format={format}', status_code=303)
+        return rr
+    elif(token == app.access_tokens):
+        app.access_tokens=''
+        rr = RedirectResponse(f'/logged_out?format={format}', status_code=303)
+        return rr
+    else:
+        response.status_code = 401
+
+@app.get("/logged_out")
+def fun(response: Response, format:str=""):
+    if format=="json":
+        response.status_code = 200
+        return {"message": "Logged out!"}
+    elif format=="html":
+        return HTMLResponse(status_code=200, content="""<h1>Logged out!</h1>""")
+    else:
+        return PlainTextResponse(status_code=200,content="Logged out!")
+
