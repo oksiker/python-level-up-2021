@@ -118,7 +118,7 @@ def login(credentials: HTTPBasicCredentials = Depends(security), response: Respo
 
 
 @app.post("/login_token")
-def login(credentials: HTTPBasicCredentials = Depends(security), response: Response=None):
+def login(response: Response,credentials: HTTPBasicCredentials = Depends(security)):
     login = credentials.username
     password = credentials.password
     if (login=="4dm1n" ) & (password=="NotSoSecurePa$$"):
@@ -138,7 +138,7 @@ def welcome(*, response: Response, session_token: str = Cookie(None), format:str
         elif format=="html":
             return HTMLResponse(status_code=200, content="""<h1>Welcome!</h1>""")
         else:
-            return "Welcome!"
+            return PlainTextResponse(status_code=200,content="Welcome!")
     else:
         esponse.status_code = 401
 
@@ -152,6 +152,6 @@ def welcome(response: Response,token: str = '', format:str=""):
         elif format=="html":
             return HTMLResponse(status_code=200, content="""<h1>Welcome!</h1>""")
         else:
-            return "Welcome!"
+            return PlainTextResponse(status_code=200,content="Welcome!")
     else:
         response.status_code = 401
