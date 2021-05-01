@@ -5,7 +5,7 @@ from urllib.parse import parse_qs
 from datetime import datetime
 from pydantic import BaseModel
 from datetime import timedelta
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse,ORJSONResponse,PlainTextResponse
 from hashlib import sha256
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
@@ -129,3 +129,29 @@ def login(credentials: HTTPBasicCredentials = Depends(security), response: Respo
     else:
         response.status_code = 401
 
+@app.get("/welcome_session")
+def welcome(*, response: Response, session_token: str = Cookie(None), format:str=""):
+    if (session_token == app.access_tokens1)|(session_token == app.access_tokens):
+        response.status_code = 200
+        if format=="json":
+            return {"message": "Welcome!"}
+        elif format=="html":
+            return HTMLResponse(status_code=200, content="""<h1>Welcome!</h1>""")
+        else:
+            return "Welcome!"
+    else:
+        esponse.status_code = 401
+
+
+@app.get("/welcome_token")
+def welcome(response: Response,token: str = '', format:str=""):
+    if (token == app.access_tokens)|(token == app.access_tokens1):
+        response.status_code = 200
+        if format=="json":
+            return {"message": "Welcome!"}
+        elif format=="html":
+            return HTMLResponse(status_code=200, content="""<h1>Welcome!</h1>""")
+        else:
+            return "Welcome!"
+    else:
+        response.status_code = 401
