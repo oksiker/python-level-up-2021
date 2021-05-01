@@ -15,9 +15,10 @@ app = FastAPI()
 app.counter = 0
 app.dicti = {}
 app.secret_key = "qwertyuiop"
-app.access_tokens = ""
-app.access_tokens1 = ""
+app.access_tokens = []
+app.access_tokens1 = []
 security = HTTPBasic()
+app.counter=0
 
 @app.get("/")
 def root():
@@ -95,7 +96,7 @@ def root(id: int, response: Response):
 
     
 #wyklad 3:
-@app.get("/hello",response_class=HTMLResponse)
+@app.get("/hello", response_class=HTMLResponse)
 def root():
     register_date = datetime.today()
     data = register_date.strftime('%Y-%m-%d')
@@ -110,9 +111,12 @@ def login(credentials: HTTPBasicCredentials = Depends(security), response: Respo
     login = credentials.username
     password = credentials.password
     if (login=="4dm1n" )& (password=="NotSoSecurePa$$"):
-        session_token = sha256(f"{login}{password}{app.secret_key}".encode()).hexdigest()
-        app.access_tokens=session_token
+        session_token = sha256(f"{login}{password}{app.secret_key}{str(app.counter)}".encode()).hexdigest()
+        if len(app.access_tokens)==3:
+            app.access_tokens.remove(app.access_tokens[0])
+        app.access_tokens.append(session_token)
         response.set_cookie(key="session_token", value=session_token)
+        app.counter+=1
         response.status_code = 201
     else:
         response.status_code = 401
@@ -123,16 +127,19 @@ def login(response: Response,credentials: HTTPBasicCredentials = Depends(securit
     login = credentials.username
     password = credentials.password
     if (login=="4dm1n" ) & (password=="NotSoSecurePa$$"):
-        session_token = sha256(f"{login}{password}{app.secret_key}".encode()).hexdigest()
-        app.access_tokens1=session_token
+        session_token = sha256(f"{login}{password}{app.secret_key}{str(app.counter)}".encode()).hexdigest()
+        if len(app.access_tokens)==3:
+            app.access_tokens1.remove(app.access_tokens1[0])
+        app.access_tokens1.append(session_token)
         response.status_code = 201
+        app.counter+=1
         return {"token": session_token}
     else:
         response.status_code = 401
 
 @app.get("/welcome_session")
 def welcome(*, response: Response, session_token: str = Cookie(None), format:str=""):
-    if (session_token == app.access_tokens1)|(session_token == app.access_tokens):
+    if (session_token in app.access_tokens1)|(session_token in app.access_tokens):
         response.status_code = 200
         if format=="json":
             return {"message": "Welcome!"}
@@ -145,8 +152,8 @@ def welcome(*, response: Response, session_token: str = Cookie(None), format:str
 
 
 @app.get("/welcome_token")
-def welcome(response: Response,token: str = 'aaaaadsdsdsadsadsads', format:str=""):
-    if (token == app.access_tokens)|(token == app.access_tokens1):
+def welcome(response: Response,token: str = '', format:str=""):
+    if (token in app.access_tokens)|(token in app.access_tokens1):
         response.status_code = 200
         if format=="json":
             return {"message": "Welcome!"}
@@ -160,12 +167,12 @@ def welcome(response: Response,token: str = 'aaaaadsdsdsadsadsads', format:str="
 
 @app.delete("/logout_session")
 def fun(*, response: Response, session_token: str = Cookie(None), format:str=""):
-    if (session_token == app.access_tokens1):
-        app.access_tokens1=''
+    if (session_token in app.access_tokens1):
+        app.access_tokens1.remove(session_token)
         rr = RedirectResponse('/logged_out?format={format}', status_code=303)
         return rr
-    elif(session_token == app.access_tokens):
-        app.access_tokens=''
+    elif(session_token in app.access_tokens):
+        app.access_tokens.remove(session_token)
         rr = RedirectResponse('/logged_out?format={format}', status_code=303)
         return rr
     else:
@@ -173,12 +180,12 @@ def fun(*, response: Response, session_token: str = Cookie(None), format:str="")
 
 @app.delete("/logout_token")
 def fun(response: Response,token: str = '', format:str=""):
-    if (token == app.access_tokens1):
-        app.access_tokens1=''
+    if (token in app.access_tokens1):
+        app.access_tokens1.remove(token)
         rr = RedirectResponse(f'/logged_out?format={format}', status_code=303)
         return rr
-    elif(token == app.access_tokens):
-        app.access_tokens=''
+    elif(token in app.access_tokens):
+        app.access_tokens.remove(token)
         rr = RedirectResponse(f'/logged_out?format={format}', status_code=303)
         return rr
     else:
