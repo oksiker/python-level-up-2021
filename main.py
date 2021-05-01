@@ -145,7 +145,7 @@ def welcome(*, response: Response, session_token: str = Cookie(None), format:str
 
 
 @app.get("/welcome_token")
-def welcome(response: Response,token: str = '', format:str=""):
+def welcome(response: Response,token: str = 'aaaaadsdsdsadsadsads', format:str=""):
     if (token == app.access_tokens)|(token == app.access_tokens1):
         response.status_code = 200
         if format=="json":
