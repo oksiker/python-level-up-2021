@@ -322,7 +322,7 @@ def root(item: Item2):
         cursor = connection.cursor()
         cursor.execute("INSERT INTO Categories (CategoryName) Values (:val) ",({'val':item.name})).fetchall()
         data = cursor.execute(f"""SELECT CategoryID from Categories WHERE CategoryName =?""",(item.name,)).fetchall()
-        return {"id": [data[-1]], "name": item.name}
+        return {"id": data[-1][0], "name": item.name}
 
 
 @app.put("/categories/{id}", status_code=200)
