@@ -228,6 +228,9 @@ def root():
         country = cursor.execute("SELECT Country FROM Customers").fetchall()
         lista=[]
         for i in range(len(names)):
-            full = address[i][0]+" " + code[i][0] + " " + city[i][0]+" "+country[i][0]
+            if (address[i][0] and code[i][0])and(city[i][0] and country[i][0]):
+                full = address[i][0]+" " + code[i][0] + " " + city[i][0]+" "+country[i][0]
+            else:
+                full=None
             lista.append({"id": ids[i][0], "name": names[i][0], "full_address":full})
         return {"customers": lista}
