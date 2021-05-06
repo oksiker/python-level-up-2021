@@ -257,7 +257,7 @@ def root(response: Response,id:int):
             response.status_code = 404
 
 @app.get("/employees")
-def root(limit:int, offset:int, order:str,response: Response):
+def root(response: Response,limit:int=99999, offset:int=0, order:str=""):
     if order=="first_name":
         a="FirstName"
     elif order=="last_name":
@@ -265,7 +265,7 @@ def root(limit:int, offset:int, order:str,response: Response):
     elif order=="city":
         a="City"
         print("ddddddd")
-    else:
+    elif order!="":
         response.status_code = 400
         a="EmployeeID"
     if a:
@@ -277,3 +277,8 @@ def root(limit:int, offset:int, order:str,response: Response):
             for i in range(len(data)):
                 lista.append({"id": data[i][0], "last_name": data[i][1], "first_name":data[i][2], "city":data[i][3] })
             return {"employees": lista}
+
+
+@app.get("/products_extended")
+def root():
+    pass
