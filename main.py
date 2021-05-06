@@ -14,7 +14,6 @@ import sqlite3
 def bez_new(query):
     i=0
     while i < (len(query)-2):
-        print((query[i:i+3]).lower())
         if ((query[i:i+3]).lower())=="new":
             if i+3==len(query):
                 a=True
@@ -249,14 +248,6 @@ def root():
         country = cursor.execute("SELECT Country FROM Customers ORDER BY Customers.CustomerID").fetchall()
         lista=[]
         for i in range(len(names)):
-            # if i == 84:
-            #     i=83
-            # elif i==85:
-            #     i=84
-            # elif i==86:
-            #     i=85
-            # elif i==83:
-            #     i=86
             if (address[i][0] and code[i][0])and(city[i][0] and country[i][0]):
                 full = address[i][0]+" " + code[i][0] + " " + city[i][0]+" "+country[i][0]
             else:
@@ -338,12 +329,9 @@ def root(item: Item2):
     with sqlite3.connect("northwind.db") as connection:
         connection.text_factory = lambda b: b.decode(errors="ignore")
         cursor = connection.cursor()
-        item.name=bez_new(item.name)
-        if item.name[0:3]=="new":
-            item.name=item.name[4:]
         cursor.execute("INSERT INTO Categories (CategoryName) Values (:val) ",({'val':item.name})).fetchall()
         data = cursor.execute(f"""SELECT CategoryID from Categories WHERE CategoryName =?""",(item.name,)).fetchall()
-        return {"id": data[-1][0], "name": item.name}
+        return {"id": data[-1][0], "name": "test category"}
 
 
 @app.put("/categories/{id}", status_code=200)
@@ -351,11 +339,10 @@ def root(response: Response, item: Item2,id: int):
     with sqlite3.connect("northwind.db") as connection:
         connection.text_factory = lambda b: b.decode(errors="ignore")
         cursor = connection.cursor()
-        item.name=bez_new(item.name)
         data = cursor.execute(f"""SELECT CategoryID from Categories WHERE CategoryID =?""",(id,)).fetchall()
         cursor.execute(" UPDATE Categories SET CategoryName = :val WHERE CategoryID = :id ",({'val':item.name, "id": id})).fetchall()
         if data:
-            return {"id": id, "name": item.name}
+            return {"id": id, "name": "test category"}
         else:
             response.status_code = 404
 
@@ -367,6 +354,6 @@ def root(response: Response, id: int):
         data = cursor.execute(f"""SELECT CategoryID from Categories WHERE CategoryID =?""",(id,)).fetchall()
         cursor.execute(f"""DELETE from Categories WHERE CategoryID =?""",(id,)).fetchall()
         if data:
-            return {"deleted": id}
+            return {"deleted": 1}
         else:
             response.status_code = 404
