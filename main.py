@@ -330,6 +330,7 @@ def root(response: Response, item: Item2,id: int):
     with sqlite3.connect("northwind.db") as connection:
         connection.text_factory = lambda b: b.decode(errors="ignore")
         cursor = connection.cursor()
+        item.name = item.name.substring(4)
         data = cursor.execute(f"""SELECT CategoryID from Categories WHERE CategoryID =?""",(id,)).fetchall()
         cursor.execute(" UPDATE Categories SET CategoryName = :val WHERE CategoryID = :id ",({'val':item.name, "id": id})).fetchall()
         if data:
@@ -342,6 +343,7 @@ def root(response: Response, id: int):
     with sqlite3.connect("northwind.db") as connection:
         connection.text_factory = lambda b: b.decode(errors="ignore")
         cursor = connection.cursor()
+        item.name = item.name.substring(4)
         data = cursor.execute(f"""SELECT CategoryID from Categories WHERE CategoryID =?""",(id,)).fetchall()
         cursor.execute(f"""DELETE from Categories WHERE CategoryID =?""",(id,)).fetchall()
         if data:
