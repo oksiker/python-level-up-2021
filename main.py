@@ -279,13 +279,15 @@ def root(response: Response,limit:int=999, offset:int=0, order:str=""):
                 lista.append({"id": data[i][0], "last_name": data[i][1], "first_name":data[i][2], "city":data[i][3] })
             return {"employees": lista}
 
-# @app.get("/products_extended")
-# def root():
-#     with sqlite3.connect("northwind.db") as connection:
-#             connection.text_factory = lambda b: b.decode(errors="ignore")
-#             cursor = connection.cursor()
-#             data = cursor.execute(f"""SELECT ProductID,  ProductName FROM Products ORDER BY {a} ;""").fetchall()
-#             lista=[]
-#             for i in range(len(data)):
-#                 lista.append({"id": data[i][0], "name": data[i][1], "category":data[i][2], "suplier":data[i][3] })
-#             return {"products_extended": lista}
+@app.get("/products_extended")
+def root():
+    with sqlite3.connect("northwind.db") as connection:
+            connection.text_factory = lambda b: b.decode(errors="ignore")
+            cursor = connection.cursor()
+            data = cursor.execute(f"""SELECT Products.ProductID, Products.ProductName, Categories.CategoryName, Suppliers.CompanyName FROM Products
+            INNER JOIN Categories ON Products.CategoryID=Categories.CategoryID 
+            INNER JOIN Suppliers ON Products.SupplierID=Suppliers.SupplierID;""").fetchall()
+            lista=[]
+            for i in range(len(data)):
+                lista.append({"id": data[i][0], "name": data[i][1], "category":data[i][2], "suplier":data[i][3] })
+            return {"products_extended": lista}
