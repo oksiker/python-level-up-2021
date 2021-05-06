@@ -264,15 +264,15 @@ def root(limit:int, offset:int, order:str,response: Response):
         a="LastName"
     elif order=="city":
         a="City"
+        print("ddddddd")
     else:
         response.status_code = 400
-        a=0
+        a="EmployeeID"
     if a:
         with sqlite3.connect("northwind.db") as connection:
             connection.text_factory = lambda b: b.decode(errors="ignore")
             cursor = connection.cursor()
-            data = cursor.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees ORDER BY :orde LIMIT :limi OFFSET :offs ",
-            {"limi":limit, "offs":offset, "orde": a }).fetchall()
+            data = cursor.execute(f"""SELECT EmployeeID, LastName, FirstName, City FROM Employees ORDER BY {a} LIMIT {limit} OFFSET {offset} ;""").fetchall()
             lista=[]
             for i in range(len(data)):
                 lista.append({"id": data[i][0], "last_name": data[i][1], "first_name":data[i][2], "city":data[i][3] })
