@@ -205,17 +205,17 @@ def fun(response: Response, format:str=""):
         return PlainTextResponse(status_code=200,content="Logged out!")
 
 
-# @app.get("/categories", status_code=200)
-# def root():
-#     with sqlite3.connect("northwind.db") as connection:
-#         connection.text_factory = lambda b: b.decode(errors="ignore")
-#         cursor = connection.cursor()
-#         names = cursor.execute("SELECT CategoryName FROM Categories ORDER BY Categories.CategoryId").fetchall()
-#         ids= cursor.execute("SELECT CategoryID FROM Categories ORDER BY Categories.CategoryId").fetchall()
-#         lista=[]
-#         for i in range(len(names)):
-#             lista.append({"id": ids[i][0], "name": names[i][0]})
-#         return {"categories": lista}
+@app.get("/categories", status_code=200)
+def root():
+    with sqlite3.connect("northwind.db") as connection:
+        connection.text_factory = lambda b: b.decode(errors="ignore")
+        cursor = connection.cursor()
+        names = cursor.execute("SELECT CategoryName FROM Categories ORDER BY Categories.CategoryId").fetchall()
+        ids= cursor.execute("SELECT CategoryID FROM Categories ORDER BY Categories.CategoryId").fetchall()
+        lista=[]
+        for i in range(len(names)):
+            lista.append({"id": ids[i][0], "name": names[i][0]})
+        return {"categories": lista}
 
 
 @app.get("/customers", status_code=200)
