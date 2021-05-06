@@ -23,8 +23,8 @@ def bez_new(query):
                 query=query[4:]
             elif (query[i-1]==" ")&a:
                 query= query[0:i]+ query[i+3:]
-            else:
-                query= query[0:i]+ query[i+3:]
+            #else:
+            #    query= query[0:i]+ query[i+3:]
         else:
             i+=1
     return query
