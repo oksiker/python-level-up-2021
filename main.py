@@ -305,9 +305,13 @@ def root(response: Response,id: int ):
         WHERE Products.ProductID = {id}""").fetchall()
         lista=[]
         if not data:
-            response.status_code = 400
+            response.status_code = 404
             return ""
         for i in range(len(data)):
             prize= (data[i][3]*data[i][2])- (data[i][4]*(data[i][3]*data[i][2]))
             lista.append({"id": data[i][0], "customer": data[i][1], "quantity":data[i][2], "total_price":prize })
-        return {"products_extended": lista}
+        return {"orders": lista}
+
+@app.post("/categories")
+def root():
+    pass
