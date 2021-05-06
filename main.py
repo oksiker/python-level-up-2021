@@ -11,6 +11,9 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.responses import RedirectResponse 
 import sqlite3
 
+class Item2(BaseModel):
+    name: str
+
 app = FastAPI()
 app.counter = 0
 app.dicti = {}
@@ -202,17 +205,17 @@ def fun(response: Response, format:str=""):
         return PlainTextResponse(status_code=200,content="Logged out!")
 
 
-@app.get("/categories", status_code=200)
-def root():
-    with sqlite3.connect("northwind.db") as connection:
-        connection.text_factory = lambda b: b.decode(errors="ignore")
-        cursor = connection.cursor()
-        names = cursor.execute("SELECT CategoryName FROM Categories ORDER BY Categories.CategoryId").fetchall()
-        ids= cursor.execute("SELECT CategoryID FROM Categories ORDER BY Categories.CategoryId").fetchall()
-        lista=[]
-        for i in range(len(names)):
-            lista.append({"id": ids[i][0], "name": names[i][0]})
-        return {"categories": lista}
+# @app.get("/categories", status_code=200)
+# def root():
+#     with sqlite3.connect("northwind.db") as connection:
+#         connection.text_factory = lambda b: b.decode(errors="ignore")
+#         cursor = connection.cursor()
+#         names = cursor.execute("SELECT CategoryName FROM Categories ORDER BY Categories.CategoryId").fetchall()
+#         ids= cursor.execute("SELECT CategoryID FROM Categories ORDER BY Categories.CategoryId").fetchall()
+#         lista=[]
+#         for i in range(len(names)):
+#             lista.append({"id": ids[i][0], "name": names[i][0]})
+#         return {"categories": lista}
 
 
 @app.get("/customers", status_code=200)
@@ -312,6 +315,36 @@ def root(response: Response,id: int ):
             lista.append({"id": data[i][0], "customer": data[i][1], "quantity":data[i][2], "total_price":prize })
         return {"orders": lista}
 
-@app.post("/categories")
-def root(item: Item):
-    pass
+@app.post("/categories", status_code=201)
+def root(item: Item2):
+    with sqlite3.connect("northwind.db") as connection:
+        connection.text_factory = lambda b: b.decode(errors="ignore")
+        cursor = connection.cursor()
+        cursor.execute("INSERT INTO Categories (CategoryName) Values (:val) ",({'val':item.name})).fetchall()
+        data = cursor.execute(f"""SELECT CategoryID from Categories WHERE CategoryName =?""",(item.name,)).fetchall()
+        return {"id": data[-1], "name": item.name}
+
+
+@app.put("/categories/{id}", status_code=200)
+def root(response: Response, item: Item2,id: int):
+    with sqlite3.connect("northwind.db") as connection:
+        connection.text_factory = lambda b: b.decode(errors="ignore")
+        cursor = connection.cursor()
+        data = cursor.execute(f"""SELECT CategoryID from Categories WHERE CategoryID =?""",(id,)).fetchall()
+        cursor.execute(" UPDATE Categories SET CategoryName = :val WHERE CategoryID = :id ",({'val':item.name, "id": id})).fetchall()
+        if data:
+            return {"id": id, "name": item.name}
+        else:
+            response.status_code = 404
+
+@app.delete("/categories/{id}", status_code=200)
+def root(response: Response, id: int):
+    with sqlite3.connect("northwind.db") as connection:
+        connection.text_factory = lambda b: b.decode(errors="ignore")
+        cursor = connection.cursor()
+        data = cursor.execute(f"""SELECT CategoryID from Categories WHERE CategoryID =?""",(id,)).fetchall()
+        cursor.execute(f"""DELETE from Categories WHERE CategoryID =?""",(id,)).fetchall()
+        if data:
+            return {"id": id}
+        else:
+            response.status_code = 404
