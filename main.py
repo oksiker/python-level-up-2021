@@ -176,7 +176,7 @@ def fun(*, response: Response, session_token: str = Cookie(None), format:str="")
         rr = RedirectResponse('/logged_out?format={format}', status_code=303)
         return rr
     else:
-        esponse.status_code = 401
+        response.status_code = 401
 
 @app.delete("/logout_token")
 def fun(response: Response,token: str = '', format:str=""):
@@ -221,24 +221,37 @@ def root():
         connection.text_factory = lambda b: b.decode(errors="ignore")
         cursor = connection.cursor()
         names = cursor.execute("SELECT CompanyName FROM Customers ORDER BY Customers.CustomerID").fetchall()
-        ids= cursor.execute("SELECT CustomerID FROM Customers ORDER BY Customers.CustomerID").fetchall()
+        ids= cursor.execute("SELECT CustomerID FROM Customers ORDER BY Customers.CustomerID ").fetchall()
         address = cursor.execute("SELECT Address FROM Customers ORDER BY Customers.CustomerID").fetchall()
         code = cursor.execute("SELECT PostalCode FROM Customers ORDER BY Customers.CustomerID").fetchall()
         city = cursor.execute("SELECT City FROM Customers ORDER BY Customers.CustomerID").fetchall()
         country = cursor.execute("SELECT Country FROM Customers ORDER BY Customers.CustomerID").fetchall()
         lista=[]
         for i in range(len(names)):
-            if i == 84:
-                i=83
-            elif i==85:
-                i=84
-            elif i==86:
-                i=85
-            elif i==83:
-                i=86
+            # if i == 84:
+            #     i=83
+            # elif i==85:
+            #     i=84
+            # elif i==86:
+            #     i=85
+            # elif i==83:
+            #     i=86
             if (address[i][0] and code[i][0])and(city[i][0] and country[i][0]):
                 full = address[i][0]+" " + code[i][0] + " " + city[i][0]+" "+country[i][0]
             else:
                 full=None
             lista.append({"id": ids[i][0], "name": names[i][0], "full_address":full})
         return {"customers": lista}
+
+@app.get("/products/{id}")
+def root(response: Response,id:int):
+    idi=id
+    with sqlite3.connect("northwind.db") as connection:
+        connection.text_factory = lambda b: b.decode(errors="ignore")
+        cursor = connection.cursor()
+        name = cursor.execute("SELECT ProductName FROM Products WHERE ProductID = ?",(idi,)).fetchall()
+        if name:
+            response.status_code =200
+            return {"id": idi, "name": name[0]}
+        else:
+            response.status_code = 404
