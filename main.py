@@ -228,6 +228,6 @@ def root():
         country = cursor.execute("SELECT Country FROM Customers").fetchall()
         lista=[]
         for i in range(len(names)):
-            full = str(address[i][0])+" " + str(code[i][0])+ " " +str(city[i][0])+" "+str(country[i][0])
+            full = address[i][0]+" " + code[i][0] + " " + city[i][0]+" "+country[i][0]
             lista.append({"id": ids[i][0], "name": names[i][0], "full_address":full})
         return {"customers": lista}
