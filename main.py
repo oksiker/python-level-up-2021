@@ -257,7 +257,7 @@ def root(response: Response,id:int):
             response.status_code = 404
 
 @app.get("/employees")
-def root(response: Response,limit:int=99999, offset:int=0, order:str=""):
+def root(response: Response,limit:int=999, offset:int=0, order:str=""):
     if order=="first_name":
         a="FirstName"
     elif order=="last_name":
@@ -265,8 +265,9 @@ def root(response: Response,limit:int=99999, offset:int=0, order:str=""):
     elif order=="city":
         a="City"
         print("ddddddd")
-    elif order!="":
-        response.status_code = 400
+    else:
+        if order!="":
+            response.status_code = 400
         a="EmployeeID"
     if a:
         with sqlite3.connect("northwind.db") as connection:
@@ -278,7 +279,13 @@ def root(response: Response,limit:int=99999, offset:int=0, order:str=""):
                 lista.append({"id": data[i][0], "last_name": data[i][1], "first_name":data[i][2], "city":data[i][3] })
             return {"employees": lista}
 
-
-@app.get("/products_extended")
-def root():
-    pass
+# @app.get("/products_extended")
+# def root():
+#     with sqlite3.connect("northwind.db") as connection:
+#             connection.text_factory = lambda b: b.decode(errors="ignore")
+#             cursor = connection.cursor()
+#             data = cursor.execute(f"""SELECT ProductID,  ProductName FROM Products ORDER BY {a} ;""").fetchall()
+#             lista=[]
+#             for i in range(len(data)):
+#                 lista.append({"id": data[i][0], "name": data[i][1], "category":data[i][2], "suplier":data[i][3] })
+#             return {"products_extended": lista}
