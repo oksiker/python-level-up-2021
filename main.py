@@ -292,9 +292,22 @@ def root():
                 lista.append({"id": data[i][0], "name": data[i][1], "category":data[i][2], "supplier":data[i][3] })
             return {"products_extended": lista}
 
-# @app.get("/products/{id}/orders")
-# def root():
-#     with sqlite3.connect("northwind.db") as connection:
-#         connection.text_factory = lambda b: b.decode(errors="ignore")
-#         cursor = connection.cursor()
-#         name = cursor.execute("SELECT Orders.OrderId, Customers.CompanyName FROM Orders WHERE ProductID = ?",(idi,)).fetchall()
+@app.get("/products/{id}/orders")
+def root(response: Response,id: int ):
+    with sqlite3.connect("northwind.db") as connection:
+        connection.text_factory = lambda b: b.decode(errors="ignore")
+        cursor = connection.cursor()
+        data = cursor.execute(f"""SELECT Orders.OrderID, Customers.CompanyName, [Order Details].Quantity, [Order Details].UnitPrice, [Order Details].Discount
+        FROM Orders
+        INNER JOIN Customers On Orders.CustomerID=Customers.CustomerID
+        INNER JOIN [Order Details] ON Orders.OrderID=[Order Details].OrderID
+        INNER JOIN Products ON [Order Details].ProductID=Products.ProductID
+        WHERE Products.ProductID = {id}""").fetchall()
+        lista=[]
+        if not data:
+            response.status_code = 400
+            return ""
+        for i in range(len(data)):
+            prize= (data[i][3]*data[i][2])- (data[i][4]*(data[i][3]*data[i][2]))
+            lista.append({"id": data[i][0], "customer": data[i][1], "quantity":data[i][2], "total_price":prize })
+        return {"products_extended": lista}
