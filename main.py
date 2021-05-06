@@ -345,6 +345,6 @@ def root(response: Response, id: int):
         data = cursor.execute(f"""SELECT CategoryID from Categories WHERE CategoryID =?""",(id,)).fetchall()
         cursor.execute(f"""DELETE from Categories WHERE CategoryID =?""",(id,)).fetchall()
         if data:
-            return {"id": id}
+            return {"deleted": id}
         else:
             response.status_code = 404
