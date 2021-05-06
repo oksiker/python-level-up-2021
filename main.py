@@ -320,10 +320,9 @@ def root(item: Item2):
     with sqlite3.connect("northwind.db") as connection:
         connection.text_factory = lambda b: b.decode(errors="ignore")
         cursor = connection.cursor()
-        item.name = item.name.substring(4)
-        cursor.execute("INSERT INTO Categories (CategoryName) Values (:val) ",({'val':item.name})).fetchall()
-        data = cursor.execute(f"""SELECT CategoryID from Categories WHERE CategoryName =?""",(item.name,)).fetchall()
-        return {"id": data[-1][0], "name": item.name}
+        cursor.execute("INSERT INTO Categories (CategoryName) Values (:val) ",({'val':item.name[4:]})).fetchall()
+        data = cursor.execute(f"""SELECT CategoryID from Categories WHERE CategoryName =?""",(item.name[4:],)).fetchall()
+        return {"id": data[-1][0], "name": item.name[4:]}
 
 
 @app.put("/categories/{id}", status_code=200)
@@ -331,11 +330,10 @@ def root(response: Response, item: Item2,id: int):
     with sqlite3.connect("northwind.db") as connection:
         connection.text_factory = lambda b: b.decode(errors="ignore")
         cursor = connection.cursor()
-        item.name = item.name.substring(4)
         data = cursor.execute(f"""SELECT CategoryID from Categories WHERE CategoryID =?""",(id,)).fetchall()
-        cursor.execute(" UPDATE Categories SET CategoryName = :val WHERE CategoryID = :id ",({'val':item.name, "id": id})).fetchall()
+        cursor.execute(" UPDATE Categories SET CategoryName = :val WHERE CategoryID = :id ",({'val':item.name[4:], "id": id})).fetchall()
         if data:
-            return {"id": id, "name": item.name}
+            return {"id": id, "name": item.name[4:]}
         else:
             response.status_code = 404
 
