@@ -320,6 +320,7 @@ def root(item: Item2):
     with sqlite3.connect("northwind.db") as connection:
         connection.text_factory = lambda b: b.decode(errors="ignore")
         cursor = connection.cursor()
+        item.name = item.name.substring(4)
         cursor.execute("INSERT INTO Categories (CategoryName) Values (:val) ",({'val':item.name})).fetchall()
         data = cursor.execute(f"""SELECT CategoryID from Categories WHERE CategoryName =?""",(item.name,)).fetchall()
         return {"id": data[-1][0], "name": item.name}
@@ -343,7 +344,6 @@ def root(response: Response, id: int):
     with sqlite3.connect("northwind.db") as connection:
         connection.text_factory = lambda b: b.decode(errors="ignore")
         cursor = connection.cursor()
-        item.name = item.name.substring(4)
         data = cursor.execute(f"""SELECT CategoryID from Categories WHERE CategoryID =?""",(id,)).fetchall()
         cursor.execute(f"""DELETE from Categories WHERE CategoryID =?""",(id,)).fetchall()
         if data:
