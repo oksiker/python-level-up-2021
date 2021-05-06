@@ -289,5 +289,12 @@ def root():
             INNER JOIN Suppliers ON Products.SupplierID=Suppliers.SupplierID;""").fetchall()
             lista=[]
             for i in range(len(data)):
-                lista.append({"id": data[i][0], "name": data[i][1], "category":data[i][2], "suplier":data[i][3] })
+                lista.append({"id": data[i][0], "name": data[i][1], "category":data[i][2], "supplier":data[i][3] })
             return {"products_extended": lista}
+
+# @app.get("/products/{id}/orders")
+# def root():
+#     with sqlite3.connect("northwind.db") as connection:
+#         connection.text_factory = lambda b: b.decode(errors="ignore")
+#         cursor = connection.cursor()
+#         name = cursor.execute("SELECT Orders.OrderId, Customers.CompanyName FROM Orders WHERE ProductID = ?",(idi,)).fetchall()
