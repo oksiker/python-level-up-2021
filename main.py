@@ -228,15 +228,14 @@ def root():
         country = cursor.execute("SELECT Country FROM Customers ORDER BY Customers.CustomerID").fetchall()
         lista=[]
         for i in range(len(names)):
-            if i == 83:
+            if i == 84:
+                i=83
+            elif i==85:
                 i=84
             elif i==86:
-                i=83
-            elif i==84:
                 i=85
-            elif i==85:
+            elif i==83:
                 i=86
-
             if (address[i][0] and code[i][0])and(city[i][0] and country[i][0]):
                 full = address[i][0]+" " + code[i][0] + " " + city[i][0]+" "+country[i][0]
             else:
