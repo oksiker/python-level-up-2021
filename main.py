@@ -11,6 +11,24 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.responses import RedirectResponse 
 import sqlite3
 
+def bez_new(query):
+    i=0
+    while i < (len(query)-2):
+        print((query[i:i+3]).lower())
+        if ((query[i:i+3]).lower())=="new":
+            if i+3==len(query):
+                a=True
+            else:
+                a= (query[i+3]==" ")
+            if i==0:
+                query=query[4:]
+            elif (query[i-1]==" ")&a:
+                query= query[0:i]+ query[i+3:]
+            else:
+                query= query[0:i]+ query[i+3:]
+        else:
+            i+=1
+    return query
 class Item2(BaseModel):
     name: str
 
@@ -320,6 +338,7 @@ def root(item: Item2):
     with sqlite3.connect("northwind.db") as connection:
         connection.text_factory = lambda b: b.decode(errors="ignore")
         cursor = connection.cursor()
+        item.name=bez_new(item.name)
         if item.name[0:3]=="new":
             item.name=item.name[4:]
         cursor.execute("INSERT INTO Categories (CategoryName) Values (:val) ",({'val':item.name})).fetchall()
@@ -332,8 +351,7 @@ def root(response: Response, item: Item2,id: int):
     with sqlite3.connect("northwind.db") as connection:
         connection.text_factory = lambda b: b.decode(errors="ignore")
         cursor = connection.cursor()
-        if item.name[0:3]=="new":
-            item.name=item.name[4:]
+        item.name=bez_new(item.name)
         data = cursor.execute(f"""SELECT CategoryID from Categories WHERE CategoryID =?""",(id,)).fetchall()
         cursor.execute(" UPDATE Categories SET CategoryName = :val WHERE CategoryID = :id ",({'val':item.name, "id": id})).fetchall()
         if data:
