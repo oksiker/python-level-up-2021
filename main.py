@@ -255,3 +255,25 @@ def root(response: Response,id:int):
             return {"id": idi, "name": name[0][0]}
         else:
             response.status_code = 404
+
+@app.get("/employees")
+def root(limit:int, offset:int, order:str,response: Response):
+    if order=="first_name":
+        a="FirstName"
+    elif order=="last_name":
+        a="LastName"
+    elif order=="city":
+        a="City"
+    else:
+        response.status_code = 400
+        a=0
+    if a:
+        with sqlite3.connect("northwind.db") as connection:
+            connection.text_factory = lambda b: b.decode(errors="ignore")
+            cursor = connection.cursor()
+            data = cursor.execute("SELECT EmployeeID, LastName, FirstName, City FROM Employees ORDER BY :orde LIMIT :limi OFFSET :offs ",
+            {"limi":limit, "offs":offset, "orde": a }).fetchall()
+            lista=[]
+            for i in range(len(data)):
+                lista.append({"id": data[i][0], "last_name": data[i][1], "first_name":data[i][2], "city":data[i][3] })
+            return {"employees": lista}
