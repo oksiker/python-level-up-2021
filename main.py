@@ -9,7 +9,7 @@ from fastapi.responses import HTMLResponse,ORJSONResponse,PlainTextResponse
 from hashlib import sha256
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.responses import RedirectResponse 
-
+import sqlite3
 
 app = FastAPI()
 app.counter = 0
@@ -201,3 +201,33 @@ def fun(response: Response, format:str=""):
     else:
         return PlainTextResponse(status_code=200,content="Logged out!")
 
+
+@app.get("/categories", status_code=200)
+def root():
+    with sqlite3.connect("northwind.db") as connection:
+        connection.text_factory = lambda b: b.decode(errors="ignore")
+        cursor = connection.cursor()
+        names = cursor.execute("SELECT CategoryName FROM Categories").fetchall()
+        ids= cursor.execute("SELECT CategoryID FROM Categories").fetchall()
+        lista=[]
+        for i in range(len(names)):
+            lista.append({"id": ids[i][0], "name": names[i][0]})
+        return {"categories": lista}
+
+
+@app.get("/customers", status_code=200)
+def root():
+    with sqlite3.connect("northwind.db") as connection:
+        connection.text_factory = lambda b: b.decode(errors="ignore")
+        cursor = connection.cursor()
+        names = cursor.execute("SELECT CompanyName FROM Customers").fetchall()
+        ids= cursor.execute("SELECT CustomerID FROM Customers").fetchall()
+        address = cursor.execute("SELECT Address FROM Customers").fetchall()
+        code = cursor.execute("SELECT PostalCode FROM Customers").fetchall()
+        city = cursor.execute("SELECT City FROM Customers").fetchall()
+        country = cursor.execute("SELECT Country FROM Customers").fetchall()
+        lista=[]
+        for i in range(len(names)):
+            full = str(address[i][0])+" " + str(code[i][0])+ " " +str(city[i][0])+" "+str(country[i][0])
+            lista.append({"id": ids[i][0], "name": names[i][0], "full_address":full})
+        return {"customers": lista}
