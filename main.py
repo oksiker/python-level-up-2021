@@ -252,6 +252,6 @@ def root(response: Response,id:int):
         name = cursor.execute("SELECT ProductName FROM Products WHERE ProductID = ?",(idi,)).fetchall()
         if name:
             response.status_code =200
-            return {"id": idi, "name": name[0]}
+            return {"id": idi, "name": name[0][0]}
         else:
             response.status_code = 404
