@@ -207,8 +207,8 @@ def root():
     with sqlite3.connect("northwind.db") as connection:
         connection.text_factory = lambda b: b.decode(errors="ignore")
         cursor = connection.cursor()
-        names = cursor.execute("SELECT CategoryName FROM Categories").fetchall()
-        ids= cursor.execute("SELECT CategoryID FROM Categories").fetchall()
+        names = cursor.execute("SELECT CategoryName FROM Categories ORDER BY Categories.CategoryId").fetchall()
+        ids= cursor.execute("SELECT CategoryID FROM Categories ORDER BY Categories.CategoryId").fetchall()
         lista=[]
         for i in range(len(names)):
             lista.append({"id": ids[i][0], "name": names[i][0]})
@@ -220,14 +220,18 @@ def root():
     with sqlite3.connect("northwind.db") as connection:
         connection.text_factory = lambda b: b.decode(errors="ignore")
         cursor = connection.cursor()
-        names = cursor.execute("SELECT CompanyName FROM Customers").fetchall()
-        ids= cursor.execute("SELECT CustomerID FROM Customers").fetchall()
-        address = cursor.execute("SELECT Address FROM Customers").fetchall()
-        code = cursor.execute("SELECT PostalCode FROM Customers").fetchall()
-        city = cursor.execute("SELECT City FROM Customers").fetchall()
-        country = cursor.execute("SELECT Country FROM Customers").fetchall()
+        names = cursor.execute("SELECT CompanyName FROM Customers ORDER BY Customers.CustomerID").fetchall()
+        ids= cursor.execute("SELECT CustomerID FROM Customers ORDER BY Customers.CustomerID").fetchall()
+        address = cursor.execute("SELECT Address FROM Customers ORDER BY Customers.CustomerID").fetchall()
+        code = cursor.execute("SELECT PostalCode FROM Customers ORDER BY Customers.CustomerID").fetchall()
+        city = cursor.execute("SELECT City FROM Customers ORDER BY Customers.CustomerID").fetchall()
+        country = cursor.execute("SELECT Country FROM Customers ORDER BY Customers.CustomerID").fetchall()
         lista=[]
         for i in range(len(names)):
+            if i == 83:
+                i=86
+            elif i==86:
+                i=83
             if (address[i][0] and code[i][0])and(city[i][0] and country[i][0]):
                 full = address[i][0]+" " + code[i][0] + " " + city[i][0]+" "+country[i][0]
             else:
