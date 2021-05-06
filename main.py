@@ -308,10 +308,10 @@ def root(response: Response,id: int ):
             response.status_code = 404
             return ""
         for i in range(len(data)):
-            prize= (data[i][3]*data[i][2])- (data[i][4]*(data[i][3]*data[i][2]))
+            prize= round((data[i][3]*data[i][2])- (data[i][4]*(data[i][3]*data[i][2])),10)
             lista.append({"id": data[i][0], "customer": data[i][1], "quantity":data[i][2], "total_price":prize })
         return {"orders": lista}
 
 @app.post("/categories")
-def root():
+def root(item: Item):
     pass
